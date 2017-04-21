@@ -84,6 +84,14 @@ class TjucmModelItemForm extends JModelForm
 
 		$this->setState('item.id', $id);
 
+		// Get item type
+		$ucmType = $app->getUserStateFromRequest('com_tjucm.itemform.client', 'client');
+
+		if (!empty($ucmType))
+		{
+			$this->setState('item.ucmType', $ucmType);
+		}
+
 		// Load the parameters.
 		$params       = $app->getParams();
 		$params_array = $params->toArray();
@@ -122,40 +130,45 @@ class TjucmModelItemForm extends JModelForm
 			// Attempt to load the row.
 			if ($table !== false && $table->load($id))
 			{
-				$user = JFactory::getUser();
-				$id   = $table->id;
-
-				if ($id)
-				{
-					$canEdit = $user->authorise('core.edit', 'com_tjucm.type.2');
-				}
-				else
-				{
-					$canEdit = $user->authorise('core.create', 'com_tjucm.type.2');
-				}
-
-				if (!$canEdit && $id && $user->authorise('core.edit.own', 'com_tjucm.type.2'))
-				{
-					$canEdit = $user->id == $table->created_by;
-				}
-
-				if (!$canEdit)
-				{
-					throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 500);
-				}
-
-				// Check published state.
-				if ($published = $this->getState('filter.published'))
-				{
-					if ($table->state != $published)
-					{
-						return $this->item;
-					}
-				}
-
 				// Convert the JTable to a clean JObject.
 				$properties  = $table->getProperties(1);
 				$this->item = ArrayHelper::toObject($properties, 'JObject');
+			}
+
+			// Get ucm type
+			$ucmType  = $this->getState('item.ucmType');
+
+			// Get UCM type id from uniquue identifier
+			JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_tjucm/models');
+			$tjUcmModelType = JModelLegacy::getInstance('Type', 'TjucmModel');
+			$typeId = $tjUcmModelType->getTypeId($ucmType);
+
+			// Get ucm type table
+			$typeTable = $this->getTable($type = 'Type', $prefix = 'TjucmTable', $config = array());
+			$typeTable->load($typeId);
+
+			$this->item->params = clone $this->getState('params');
+
+			// Compute view access permissions.
+			if ($access = $this->getState('filter.access'))
+			{
+				// If the access filter has been set, we already know this user can view.
+				$this->item->params->set('access-view', true);
+			}
+			else
+			{
+				// If no access filter is set, the layout takes some responsibility for display of limited information.
+				$user = JFactory::getUser();
+				$groups = $user->getAuthorisedViewLevels();
+
+				if (in_array($typeTable->access, $groups))
+				{
+					$this->item->params->set('access-view', true);
+				}
+				else
+				{
+					$this->item->params->set('access-view', false);
+				}
 			}
 		}
 

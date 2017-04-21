@@ -41,10 +41,21 @@ class TjucmViewItemform extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app  = JFactory::getApplication();
-		$user = JFactory::getUser();
 
 		$this->state   = $this->get('State');
 		$this->item    = $this->get('Data');
+
+		// Get ucm type
+		$this->client  = JFactory::getApplication()->input->get('client');
+
+		// Check the view access to the article (the model has already computed the values).
+		if ($this->item->params->get('access-view') == false)
+		{
+			$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$app->setHeader('status', 403, true);
+
+			return;
+		}
 
 		$this->params  = $app->getParams('com_tjucm');
 		$this->canSave = $this->get('CanSave');
@@ -53,7 +64,6 @@ class TjucmViewItemform extends JViewLegacy
 		/* Get model instance here */
 		$model = $this->getModel();
 
-		$this->client  = JFactory::getApplication()->input->get('client');
 		$this->id = $id  = JFactory::getApplication()->input->get('id');
 
 		$input  = JFactory::getApplication()->input;

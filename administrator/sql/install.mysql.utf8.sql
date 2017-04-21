@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `#__tj_ucm_types` (
 `state` TINYINT(1)  NOT NULL ,
 `type_description` TEXT NOT NULL ,
 `unique_identifier` VARCHAR(255)  NOT NULL ,
+`access` INT(10)  NOT NULL ,
 `parent_id` INT(11)  NOT NULL ,
 `params` VARCHAR(255)  NOT NULL ,
 `checked_out` INT(11)  NOT NULL ,
