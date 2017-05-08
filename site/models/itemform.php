@@ -397,7 +397,6 @@ class TjucmModelItemForm extends JModelForm
 		$id    = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('item.id');
 		$state = (!empty($data['state'])) ? 1 : 0;
 		$user  = JFactory::getUser();
-		$status_title = $app->input->get('form_status');
 
 		$ucmTypeId = $this->getState('ucmType.id');
 		$typeItemId = $this->getState('item.id');

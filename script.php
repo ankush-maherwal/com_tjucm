@@ -438,13 +438,7 @@ class Com_TjucmInstallerScript
 				case 'add':
 					$result = $this->addField($table_name, $field);
 
-					if ($result === MODIFIED)
-					{
-						$app->enqueueMessage(
-							JText::sprintf('Field `%s` has been successfully added', $field['field_name'])
-						);
-					}
-					else
+					if ($result !== MODIFIED)
 					{
 						if ($result !== NOT_MODIFIED)
 						{
@@ -517,13 +511,7 @@ class Com_TjucmInstallerScript
 					{
 						$result = $this->addField($table_name, $field);
 
-						if ($result === MODIFIED)
-						{
-							$app->enqueueMessage(
-								JText::sprintf('Field `%s` has been successfully added', $field['field_name'])
-							);
-						}
-						else
+						if ($result !== MODIFIED)
 						{
 							if ($result !== NOT_MODIFIED)
 							{
@@ -575,13 +563,7 @@ class Com_TjucmInstallerScript
 		{
 			$result = $this->addField($table_name, $field);
 
-			if ($result === MODIFIED)
-			{
-				$app->enqueueMessage(
-					JText::sprintf('Field `%s` has been successfully added', $field['field_name'])
-				);
-			}
-			else
+			if ($result !== MODIFIED)
 			{
 				if ($result !== NOT_MODIFIED)
 				{
